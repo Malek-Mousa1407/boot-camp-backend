@@ -48,7 +48,7 @@ router.post('/create',
                             }
                         }
                     )
-                }
+                }                
                 
                 // Generate a salt
                 bcryptjs.genSalt(

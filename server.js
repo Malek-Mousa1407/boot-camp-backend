@@ -15,6 +15,7 @@ const expressFormData = require('express-form-data');
 const userRoutes = require('./routes/user-routes');
 const productRoutes = require('./routes/product-routes.js');
 
+// Middleware
 // Parse urlencoded bodies and where the Content-Type header matches the type option
 server.use(express.urlencoded({extended: false}));
 // Tell express to parse JSON data
@@ -46,7 +47,6 @@ cloudinary.config(
     }
 )
 
-
 // A method to process a GET HTTP request.
 // server.get(route, callbackFunction)
 server.get('/', (req, res) =>  res.send("<h1>Welcome Home</h1>"));
@@ -56,7 +56,7 @@ server.use('/products', productRoutes);
 
 // The .listen() will connect the server to an available Port
 // server.listen(portNumber, callbackFunction)
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 server.listen(
     PORT,
     () => {
