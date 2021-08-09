@@ -16,7 +16,7 @@ server.use(express.json());
 server.use(cors()); 
 
 const mongoose = require('mongoose');
-const connectionString = "mongodb+srv://admin01:Malek2006@cluster0.hjhnv.mongodb.net/astro_jul2021?retryWrites=true&w=majority";
+const connectionString = process.env.MONGODB_CONNECTION_STRING;
 const connectionConfig = {
     useNewUrlParser: true,
     useUnifiedTopology: true
