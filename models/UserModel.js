@@ -16,10 +16,15 @@ const UsersSchema = new mongoose.Schema(
             required: true            
         },
         password:{
-            type: String
+            type: String,
+            required: true
         },
         phoneNumber:{
             type:String
+        },
+        avatar:{
+            type: String,
+            required: false
         }
     }
 );

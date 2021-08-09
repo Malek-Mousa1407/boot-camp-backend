@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcryptjs = require('bcryptjs');
 const UserModel = require('../models/UserModel.js');
+const cloudinary = require('cloudinary').v2;
 
 router.get('/',
     (req, res) => {
@@ -23,15 +24,32 @@ router.post('/create',
             password: req.body.password,
             phoneNumber: req.body.phoneNumber
         }
-        // If email is unique, create account
+        // Check for email
         UserModel
         .findOne({ email: formData.email })
-        .then((dbDocument) => {
+        .then(async(dbDocument) => {
                 // Check if email exists
             if (dbDocument){
                 res.send('Sorry, an account already exists :(');
-                // Otherwise, reject the request
+                // If email is unique, create account
             } else{
+                //If avatar is included, upload to cloudinary
+                if(Object.values(req.files).length > 0){
+                    const files = Object.values(req.files);
+                    // upload to Cloudinary
+                    await cloudinary.uploader.upload(
+                        files[0].path,
+                        (cloudinaryErr, cloudinaryResult) => {
+                            if(cloudinaryErr){
+                                console.log(cloudinaryErr);
+                            }else{
+                             // Include the image url in formData   
+                              formData.avatar = cloudinaryResult.url;                                                                               
+                            }
+                        }
+                    )
+                }
+                
                 // Generate a salt
                 bcryptjs.genSalt(
                     (err, theSalt) => {
@@ -45,8 +63,8 @@ router.post('/create',
                             // Create a new user account with hashed password
                             UserModel
                             .create(formData)
-                            .then((dbDocument) => res.json(dbDocument))
-                            .catch((error) => console.log(error));
+                            .then(dbDocument => res.json(dbDocument))
+                            .catch(error => console.log(error));
                         }
                     )
                 });              
