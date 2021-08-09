@@ -15,7 +15,7 @@ router.get('/',
 );
 
 router.post('/create',
-    (req, res) => {
+    (req, res) => { 
         const formData = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
