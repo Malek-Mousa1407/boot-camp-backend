@@ -22,7 +22,6 @@ router.get('/',
 // Create a User
 router.post('/create',
     (req, res) => {
-
         // Contains the user's submission
         const formData = {
             firstName: req.body.firstName,
@@ -31,72 +30,58 @@ router.post('/create',
             password: req.body.password,
             phoneNumber: req.body.phoneNumber
         }
-
         UserModel
             .findOne({ email: formData.email }) // for example: jondoe@gmail.com
             .then(
-                async (dbDocument) => {
-                    // If email exists, reject request
-                    if (dbDocument) {
-                        res.send("Sorry, an account with this email already exists.");
-                    }
-                    // Otherwise, create the account
-                    else {
-                        // If avatar file is included...
-                        if (Object.values(req.files).length > 0) {
-                            const files = Object.values(req.files);
-                            // upload to Cloudinary
-                            await cloudinary.uploader.upload(
-                                files[0].path,
-                                (cloudinaryErr, cloudinaryResult) => {
-                                    if (cloudinaryErr) {
-                                        console.log(cloudinaryErr);
-                                    } else {
-                                        // Include the image url in formData
-                                        formData.avatar = cloudinaryResult.url;
-                                    }
-                                }
-                            )
-                        };
-
-                        // Generate a Salt
-                        bcryptjs.genSalt(
-                            (err, theSalt) => {
-                                // Combine user's password + Salt to hash the password
-                                bcryptjs.hash(
-                                    formData.password,  // first ingredient
-                                    theSalt,    // second ingredient
-                                    (err, hashedPassword) => {
-                                        // Replace the password in the form with the hash
-                                        formData.password = hashedPassword;
-                                        // Create the document
-                                        // Use the UserModel to create a new document
-                                        UserModel
-                                            .create(formData)
-                                            .then(
-                                                (dbDocument) => {
-                                                    res.send(dbDocument);
-                                                }
-                                            )
-                                            .catch(
-                                                (error) => {
-                                                    console.log(error);
-                                                }
-                                            );
-                                    }
-                                );
+            async (dbDocument) => {
+            // If email exists, reject request
+            if (dbDocument) {
+                res.send("Sorry, an account with this email already exists.");
+            }
+            // Otherwise, create the account
+            else {
+                // If avatar file is included...
+                if (Object.values(req.files).length > 0) {
+                    const files = Object.values(req.files);
+                    // upload to Cloudinary
+                    await cloudinary.uploader.upload(
+                        files[0].path,
+                        (cloudinaryErr, cloudinaryResult) => {
+                            if (cloudinaryErr) {
+                                console.log(cloudinaryErr);
+                            } else {
+                                // Include the image url in formData
+                                formData.avatar = cloudinaryResult.url;
                             }
-                        );
-                    }
+                        }
+                    )
+                };
+            // Generate a Salt
+            bcryptjs.genSalt(
+                (err, theSalt) => {
+                    // Combine user's password + Salt to hash the password
+                    await bcryptjs.hash(
+                        formData.password,  // first ingredient
+                        theSalt,    // second ingredient
+                        (err, hashedPassword) => {
+                            // Replace the password in the form with the hash
+                            formData.password = hashedPassword;
+                            // Create the document
+                            // Use the UserModel to create a new document
+                            UserModel
+                            .create(formData)
+                            .then(dbDocument => {
+                                res.send(dbDocument);
+                            })
+                            .catch(error => console.log(error));
+                        }
+                    );
                 }
-            )
-            .catch(
-                (err) => {
-                    console.log(err);
-                }
-            )
-    }
-);
+            );
+        }
+    })
+    .catch(err => console.log(err));
+});
 
 // Login a User
 router.post('/login',
@@ -118,25 +103,25 @@ router.post('/login',
                             formData.password,          // password user sent
                             dbDocument.password         // password in database
                         )
-                        .then(
-                            (isMatch) => {
-                                // If passwords match...
-                                if (isMatch) {
-                                    // Generate the Payload
-                                    const payload = {
-                                        _id: dbDocument._id,
-                                        email: dbDocument.email
-                                    }
-                                    // Generate the jsonwebtoken
-                                    jwt
-                                    .sign(
-                                        payload,
-                                        jwtSecret,
-                                        (err, jsonwebtoken) => {
-                                            if (err) console.log(err);                                                
-                                            else res.send(jsonwebtoken);                                                                                            
-                                        });
-                                }// If passwords don't match, reject login
+                            .then(
+                                (isMatch) => {
+                                    // If passwords match...
+                                    if (isMatch) {
+                                        // Generate the Payload
+                                        const payload = {
+                                            _id: dbDocument._id,
+                                            email: dbDocument.email
+                                        }
+                                        // Generate the jsonwebtoken
+                                        jwt
+                                            .sign(
+                                                payload,
+                                                jwtSecret,
+                                                (err, jsonwebtoken) => {
+                                                    if (err) console.log(err);
+                                                    else res.send(jsonwebtoken);
+                                                });
+                                    }// If passwords don't match, reject login
                                     else {
                                         res.send("Wrong email or password");
                                     }
