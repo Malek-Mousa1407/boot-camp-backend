@@ -101,10 +101,9 @@ server.use('/products', productRoutes);
 
 // The .listen() will connect the server to an available Port
 // server.listen(portNumber, callbackFunction)
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 server.listen(
-    PORT,
-    () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
+    PORT, () => {
+        console.log(`Server is live on http://localhost:${PORT}`);
     }
 )

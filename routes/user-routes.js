@@ -58,7 +58,7 @@ router.post('/create',
                 };
             // Generate a Salt
             bcryptjs.genSalt(
-                (err, theSalt) => {
+               async (err, theSalt) => {
                     // Combine user's password + Salt to hash the password
                     await bcryptjs.hash(
                         formData.password,  // first ingredient
