@@ -36,7 +36,10 @@ router.post('/create',
             async (dbDocument) => {
             // If email exists, reject request
             if (dbDocument) {
-                res.send("Sorry, an account with this email already exists.");
+                res.json({
+                    status: "unsuccesful",
+                    message: "Sorry, an account with this email already exists"
+                });
             }
             // Otherwise, create the account
             else {
@@ -71,16 +74,29 @@ router.post('/create',
                             UserModel
                             .create(formData)
                             .then(dbDocument => {
-                                res.send(dbDocument);
+                                res.json({
+                                    dbDocument: dbDocument,
+                                    status: "successful"
+                                });
                             })
-                            .catch(error => console.log(error));
+                            .catch(error => {
+                                console.log(error);
+                                res.json({
+                                    status: "unsuccessful"
+                                })
+                            });
                         }
                     );
                 }
             );
         }
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        console.log(err);
+        res.json({
+            status: "unsuccessful"
+        })
+    });
 });
 
 // Login a User
