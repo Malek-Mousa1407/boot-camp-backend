@@ -20,7 +20,8 @@ const UsersSchema = new mongoose.Schema(
             required: true
         },
         phoneNumber:{
-            type:String
+            type:String,
+            required: false
         },
         avatar:{
             type: String,
